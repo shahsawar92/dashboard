@@ -5,9 +5,9 @@ import { Container, Card, ListGroup } from "react-bootstrap";
 const ListComponent = () => {
   const location = useLocation();
   const [apiResponse, setApiResponse] = useState(null);
+  const { selectedOption, userId } = location.state;
 
   useEffect(() => {
-    const { selectedOption, userId } = location.state;
     const fetchData = async () => {
       try {
         // api call here
@@ -16,7 +16,7 @@ const ListComponent = () => {
           { id: 2, name: "Jane" },
           { id: 3, name: "Alice" },
         ];
-
+        // set response of api call to state
         setApiResponse(data);
       } catch (error) {
         console.error("Error:", error);
@@ -30,8 +30,8 @@ const ListComponent = () => {
     <Container>
       <div>
         <h2>Options for:</h2>
-        <p>Selected Option: {location.state.selectedOption}</p>
-        <p>UserID: {location.state.userId}</p>
+        <p>Selected Option: {selectedOption}</p>
+        <p>UserID: {userId}</p>
       </div>
 
       <div>
