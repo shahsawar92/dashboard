@@ -31,7 +31,7 @@ import AppsIcon from "@mui/icons-material/Apps";
 import MessageIcon from "@mui/icons-material/Message";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PhoneAndroid } from "@mui/icons-material";
-import { Button, Select, MenuItem } from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import { DevicesContext } from "../../contexts/dashboardContext";
 
 const drawerWidth = 240;
