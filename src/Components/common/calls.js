@@ -7,15 +7,13 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Paper";
 import { useLocation } from "react-router";
-import { fetchCallsList, fetchcallLogsList } from "../../services/apiService";
+import { fetchCallsList } from "../../services/apiService";
 import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
-
-function createData(name, phone) {
-  return { name, phone };
-}
+import { AlertTitle, Button } from "@mui/material";
+import { useTableExport } from "../../services/customHooks/useExportTable";
 
 export default function CallLogs() {
   const location = useLocation();
@@ -24,9 +22,10 @@ export default function CallLogs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = userIdenc;
+  const { tableRef, exportTableData } = useTableExport();
 
   useEffect(() => {
-    const fetchContactData = async () => {
+    const fetchCallLogs = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -49,11 +48,11 @@ export default function CallLogs() {
       }
     };
 
-    fetchContactData();
+    fetchCallLogs();
   }, [userId]);
 
   let tableRows = [];
-  console.log("contact list:", callLogsList);
+  console.log("call logs:", callLogsList);
 
   if (loading) {
     return (
@@ -62,15 +61,27 @@ export default function CallLogs() {
           <TableHead>
             <TableRow>
               <TableCell>
-                <Skeleton animation="wave" height={20} width="80%" />
+                <Skeleton animation="wave" height={20} width="20%" />
               </TableCell>
               <TableCell align="left">
-                <Skeleton animation="wave" height={20} width="50%" />
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
+              <TableCell colSpan={2}>
+                <Skeleton animation="wave" height={50} />
+              </TableCell>
               <TableCell colSpan={2}>
                 <Skeleton animation="wave" height={50} />
               </TableCell>
@@ -82,37 +93,86 @@ export default function CallLogs() {
   }
 
   if (error) {
+    let errorMessage = "Client is not responding. Please try again later.";
+
     return (
-      <Alert severity="error">
-        <Typography>Error: {error.message}</Typography>
-      </Alert>
+      <TableContainer component={Card}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Type</TableCell>
+              <TableCell align="left">Phone Number</TableCell>
+              <TableCell align="left">Duration</TableCell>
+              <TableCell align="left">Date</TableCell>
+              <TableCell align="left">Time</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={2}>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  <Typography>{errorMessage}</Typography>
+                </Alert>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 
   if (!callLogsList || callLogsList?.call_logs?.length === 0) {
     return (
-      <Alert severity="warning">
-        <Typography>No contacts found!</Typography>
-      </Alert>
+      <TableContainer component={Card}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Call Logs</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <Alert severity="warning">
+                <Typography>No call logs found found!</Typography>
+              </Alert>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 
   tableRows = callLogsList?.call_logs?.map((eachcontact, key) => {
+    const dateObject = new Date(eachcontact?.date);
+    const date = dateObject.toLocaleDateString();
+    const time = dateObject.toLocaleTimeString();
+    const timeinmin = eachcontact?.durationInSec / 60;
     return (
       <TableRow key={key}>
-        <TableCell>{eachcontact?.name}</TableCell>
+        <TableCell>{eachcontact?.type}</TableCell>
         <TableCell>{eachcontact?.number}</TableCell>
+        <TableCell>{timeinmin}</TableCell>
+        <TableCell>{date}</TableCell>
+        <TableCell>{time}</TableCell>
       </TableRow>
     );
   });
 
   return (
     <TableContainer component={Card}>
-      <Table aria-label="simple table">
+      <Button variant="contained" onClick={() => exportTableData}>
+        {" "}
+        Export{" "}
+      </Button>
+      <Table aria-label="simple table" ref={tableRef}>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
+            <TableCell>Type</TableCell>
             <TableCell align="left">Phone Number</TableCell>
+            <TableCell align="left">Duration</TableCell>
+            <TableCell align="left">Date</TableCell>
+            <TableCell align="left">Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{tableRows}</TableBody>

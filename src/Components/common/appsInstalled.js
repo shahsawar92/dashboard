@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
+import { AlertTitle } from "@mui/material";
 
 function createData(name, phone) {
   return { name, phone };
@@ -83,10 +84,29 @@ export default function InstalledAppList() {
   }
 
   if (error) {
+    let errorMessage = "Client is not responding. Please try again later.";
+
     return (
-      <Alert severity="error">
-        <Typography>Error: {error.message}</Typography>
-      </Alert>
+      <TableContainer component={Card}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {/* <TableCell>Name</TableCell> */}
+              <TableCell align="left">Installed Apps</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={2}>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  <Typography>{errorMessage}</Typography>
+                </Alert>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 

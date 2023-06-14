@@ -12,6 +12,8 @@ import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
+import { AlertTitle, Button } from "@mui/material";
+import { useTableExport } from "../../services/customHooks/useExportTable";
 
 function createData(name, phone) {
   return { name, phone };
@@ -24,6 +26,7 @@ export default function ContactList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = userIdenc;
+  const { tableRef, exportTableData } = useTableExport();
 
   useEffect(() => {
     const fetchContactData = async () => {
@@ -83,10 +86,29 @@ export default function ContactList() {
   }
 
   if (error) {
+    let errorMessage = "Client is not responding. Please try again later.";
+
     return (
-      <Alert severity="error">
-        <Typography>Error: {error.message}</Typography>
-      </Alert>
+      <TableContainer component={Card}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell align="left">Phone Number</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={2}>
+                <Alert severity="error">
+                  <AlertTitle>Error</AlertTitle>
+                  <Typography>{errorMessage}</Typography>
+                </Alert>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   }
 
@@ -104,16 +126,30 @@ export default function ContactList() {
   });
 
   return (
-    <TableContainer component={Card}>
-      <Table aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell align="left">Phone Number</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{tableRows}</TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Button
+        variant="contained"
+        onClick={() => exportTableData()}
+        style={{
+          marginBottom: "16px",
+          marginLeft: "auto",
+          marginRight: "16px",
+          display: "block",
+        }}
+      >
+        Export
+      </Button>
+      <TableContainer component={Card} ref={tableRef}>
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell align="left">Phone Number</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{tableRows}</TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

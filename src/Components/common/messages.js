@@ -7,40 +7,37 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Paper";
 import { useLocation } from "react-router";
-import { fetchLocationList } from "../../services/apiService";
+import { fetchCallsList, fetchMessagesList } from "../../services/apiService";
 import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
-import AddLocationAltIcon from "@mui/icons-material/AddLocationAlt";
 import { AlertTitle, Button } from "@mui/material";
 import { useTableExport } from "../../services/customHooks/useExportTable";
-function createData(name, phone) {
-  return { name, phone };
-}
 
-export default function LocationList() {
+export default function MessagesLogs() {
   const location = useLocation();
   const { userIdenc } = location.state || {};
-  const [locationList, setlocationList] = useState([]);
+  const [messagesList, setmessagesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = userIdenc;
   const { tableRef, exportTableData } = useTableExport();
+
   useEffect(() => {
-    const fetchLocationData = async () => {
+    const fetchMessages = async () => {
       try {
         setLoading(true);
         setError(null);
-        setlocationList([]);
+        setmessagesList([]);
 
-        const LocationResponse = await fetchLocationList(userId);
-        const parsedResponse = JSON.parse(LocationResponse);
+        const contactResponse = await fetchMessagesList(userId);
+        const parsedResponse = JSON.parse(contactResponse);
 
-        if (LocationResponse.includes("error")) {
+        if (contactResponse.includes("error")) {
           setError(parsedResponse.error);
         } else {
-          setlocationList(parsedResponse);
+          setmessagesList(parsedResponse);
         }
 
         setLoading(false);
@@ -51,10 +48,11 @@ export default function LocationList() {
       }
     };
 
-    fetchLocationData();
+    fetchMessages();
   }, [userId]);
 
   let tableRows = [];
+  console.log("messages:", messagesList);
 
   if (loading) {
     return (
@@ -63,15 +61,27 @@ export default function LocationList() {
           <TableHead>
             <TableRow>
               <TableCell>
-                <Skeleton animation="wave" height={20} width="80%" />
+                <Skeleton animation="wave" height={20} width="20%" />
               </TableCell>
               <TableCell align="left">
-                <Skeleton animation="wave" height={20} width="50%" />
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
+              </TableCell>
+              <TableCell align="left">
+                <Skeleton animation="wave" height={20} width="20%" />
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
+              <TableCell colSpan={2}>
+                <Skeleton animation="wave" height={50} />
+              </TableCell>
               <TableCell colSpan={2}>
                 <Skeleton animation="wave" height={50} />
               </TableCell>
@@ -90,8 +100,7 @@ export default function LocationList() {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Latitude</TableCell>
-              <TableCell align="left">Longitude</TableCell>
+              <TableCell align="left">Messages</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,26 +118,46 @@ export default function LocationList() {
     );
   }
 
-  if (!locationList || Object.entries(locationList.location).length === 0) {
+  if (!messagesList || messagesList?.sms?.length === 0) {
     return (
       <TableContainer component={Card}>
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Location</TableCell>
+              <TableCell align="left">Messages</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
-              <Alert severity="warning">
-                <Typography>No location fetched!</Typography>
-              </Alert>
+              <TableCell colSpan={2}>
+                <Alert severity="warning">
+                  <Typography>No Messages Found!</Typography>
+                </Alert>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
     );
   }
+
+  tableRows = messagesList?.sms?.map((eachmsg, key) => {
+    console.log("eachmsg:", eachmsg.date);
+    const dateObject = new Date(Number(eachmsg?.date));
+    console.log("dateObject:", dateObject);
+
+    const date = dateObject.toLocaleDateString();
+    const time = dateObject.toLocaleTimeString();
+    return (
+      <TableRow key={key}>
+        <TableCell>{eachmsg?.address}</TableCell>
+        <TableCell>{eachmsg?.body}</TableCell>
+
+        <TableCell>{date}</TableCell>
+        <TableCell>{time}</TableCell>
+      </TableRow>
+    );
+  });
 
   return (
     <>
@@ -144,30 +173,18 @@ export default function LocationList() {
       >
         Export
       </Button>
+
       <TableContainer component={Card}>
         <Table aria-label="simple table" ref={tableRef}>
           <TableHead>
             <TableRow>
-              <TableCell>Latitude</TableCell>
-              <TableCell align="left">Longitude</TableCell>
+              <TableCell>To</TableCell>
+              <TableCell align="left">Body</TableCell>
+              <TableCell align="left">Date</TableCell>
+              <TableCell align="left">Sent Date</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            <TableRow>
-              {Object.entries(locationList?.location)?.map(([key, value]) => {
-                return <TableCell key={key}>{value}</TableCell>;
-              })}
-              <TableCell align="left">
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${locationList?.location?.latitude},${locationList?.location?.longitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <AddLocationAltIcon />
-                </a>
-              </TableCell>
-            </TableRow>
-          </TableBody>
+          <TableBody>{tableRows}</TableBody>
         </Table>
       </TableContainer>
     </>

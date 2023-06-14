@@ -7,6 +7,8 @@ import Map from "../components/common/map";
 import InternalStorage from "../components/common/internalStorage";
 import InstalledAppList from "../components/common/appsInstalled";
 import LocationList from "../components/common/locationGPS";
+import MessagesLogs from "../components/common/messages";
+import NotificationsList from "../components/common/notifications";
 
 const DefaultRouter = () => {
   return (
@@ -21,6 +23,8 @@ const DefaultRouter = () => {
         <Route path="/internal-storage/user/*" element={<InternalStorage />} />
         <Route path="/installed-apps/user/*" element={<InstalledAppList />} />
         <Route path="/calls/user/*" element={<CallsList />} />
+        <Route path="/notifications/user/*" element={<NotificationsList />} />
+        <Route path="/messages/user/*" element={<MessagesLogs />} />
         <Route path="/location/user/*" element={<LocationList />} />
         <Route path="/user/map" element={<Map />} />
       </Routes>
