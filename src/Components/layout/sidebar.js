@@ -32,6 +32,7 @@ import MessageIcon from "@mui/icons-material/Message";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PhoneAndroid } from "@mui/icons-material";
 import { Button, Select, MenuItem } from "@mui/material";
+import { DevicesContext } from "../../contexts/dashboardContext";
 
 const drawerWidth = 240;
 
@@ -43,6 +44,8 @@ function ResponsiveDrawer(props) {
   const navigate = useNavigate();
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { updateDevices } = React.useContext(DevicesContext);
+
   const options = [
     { value: "all", label: "All Devices" },
     { value: "10", label: "Android 10" },
@@ -56,6 +59,7 @@ function ResponsiveDrawer(props) {
         if (userList?.length === 0) {
           const users = await fetchUsers();
           setUserList(users);
+          updateDevices(users);
           console.log("Users", users);
         }
       } catch (error) {
@@ -87,7 +91,14 @@ function ResponsiveDrawer(props) {
     }
     return (
       <>
-        {filteredUsers.length ? (
+        {!filteredUsers?.length ? (
+          <ListItem sx={{ paddingLeft: "24px", paddingRight: "24px" }}>
+            <ListItemIcon>
+              <PhoneAndroid style={{ color: "#b4c7c5" }} />
+            </ListItemIcon>
+            <ListItemText primary="No Devices Connected" />
+          </ListItem>
+        ) : (
           filteredUsers?.map((user) => (
             <React.Fragment key={user._id}>
               <ListItem
@@ -116,13 +127,6 @@ function ResponsiveDrawer(props) {
               {selectedUser === user && list(user._id)}
             </React.Fragment>
           ))
-        ) : (
-          <ListItem sx={{ paddingLeft: "24px", paddingRight: "24px" }}>
-            <ListItemIcon>
-              <PhoneAndroid style={{ color: "#b4c7c5" }} />
-            </ListItemIcon>
-            <ListItemText primary="No Devices Connected" />
-          </ListItem>
         )}
       </>
     );
@@ -161,7 +165,7 @@ function ResponsiveDrawer(props) {
   const list = (userId) => (
     <>
       <List>
-        {ListSubItems.map((text, index) => {
+        {ListSubItems?.map((text, index) => {
           const IconComponent = iconMapping[text.name] || InboxIcon;
 
           return (
@@ -256,7 +260,7 @@ function ResponsiveDrawer(props) {
               paddingRight: "24px",
               height: "64px",
               marginInlineEnd: "0",
-              backgroundColor: "#00b1ff",
+              backgroundColor: "#0e6186 !important",
             }}
           >
             <LogoDevIcon
@@ -295,7 +299,7 @@ function ResponsiveDrawer(props) {
                   marginRight: "10px",
                 }}
               >
-                {options.map((option) => (
+                {options?.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
                   </MenuItem>
@@ -327,7 +331,7 @@ function ResponsiveDrawer(props) {
               paddingRight: "24px",
               height: "64px",
               marginInlineEnd: "0",
-              backgroundColor: "#00b1ff",
+              backgroundColor: "#0e6186 ",
             }}
           >
             <LogoDevIcon
@@ -363,7 +367,7 @@ function ResponsiveDrawer(props) {
                 },
               }}
             >
-              {options.map((option) => (
+              {options?.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

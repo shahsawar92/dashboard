@@ -1,80 +1,82 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Form, Button, ListGroup } from "react-bootstrap";
+import React from "react";
+import { makeStyles } from "@mui/styles";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import { DevicesContext } from "../contexts/dashboardContext";
 
-const UserComponent = () => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [users, setUsers] = useState([]);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  introCard: {
+    height: 200,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 40,
+    backgroundColor: "#0e6186 !important",
+    color: "#FFFFFF !important",
+  },
+  infoCard: {
+    height: 150,
+    marginBottom: 20,
+    backgroundColor: "#ECEFF1 !important",
+    color: "#37474F",
+  },
+}));
 
-  const navigate = useNavigate();
-
-  // Simulated API call for users and setting the users state
-  const AllUsers = [
-    { id: 1, username: "John" },
-    { id: 2, username: "Jane" },
-    { id: 3, username: "Alice" },
-  ];
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
-  };
-
-  const handleSendClick = (userId) => {
-    console.log("userId", userId);
-    if (!selectedOption) return alert("Please select an option");
-    navigate("/list", { state: { selectedOption, userId } });
-  };
-
+const Dashboard = () => {
+  const { devices } = React.useContext(DevicesContext);
+  const classes = useStyles();
   return (
-    <Container>
-      <h2>Select an option:</h2>
-      <Form>
-        <Form.Check
-          type="radio"
-          id="option1"
-          label="Option 1"
-          value="option1"
-          checked={selectedOption === "option1"}
-          onChange={handleOptionChange}
-        />
-        <Form.Check
-          type="radio"
-          id="option2"
-          label="Option 2"
-          value="option2"
-          checked={selectedOption === "option2"}
-          onChange={handleOptionChange}
-        />
-        <Form.Check
-          type="radio"
-          id="option3"
-          label="Option 3"
-          value="option3"
-          checked={selectedOption === "option3"}
-          onChange={handleOptionChange}
-        />
-      </Form>
-
-      <h2>User List:</h2>
-      <ListGroup>
-        {AllUsers.map((user) => (
-          <ListGroup.Item
-            style={{ display: "flex", justifyContent: "space-between" }}
-            key={user.id}
-          >
-            <div>{user.username}</div>
-            <Button
-              variant="primary"
-              style={{ display: "inline-block" }}
-              onClick={() => handleSendClick(user.id)}
-            >
-              Send
-            </Button>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+    <Container maxWidth="lg" className={classes.root}>
+      <Card className={classes.introCard}>
+        <CardContent>
+          <Typography variant="h4" component="h2" align="center">
+            Welcome to the Dashboard!
+          </Typography>
+        </CardContent>
+      </Card>
+      {/* <Card className={classes.infoCard}>
+        <CardContent>
+          <Typography variant="h6" component="h3">
+            Number of Devices Connected
+          </Typography>
+          <Typography variant="body1">
+            There are {devices.length} devices connected.
+          </Typography>
+        </CardContent>
+      </Card> */}
+      {devices?.map((device) => (
+        <DeviceBox key={device._id} device={device} />
+      ))}
     </Container>
   );
 };
-
-export default UserComponent;
+const DeviceBox = ({ device }) => {
+  const classes = useStyles();
+  const lastOnlineTime = new Date(device.last_online).toLocaleTimeString();
+  const lastOnlineDate = new Date(device.last_online).toLocaleDateString();
+  return (
+    <Card className={classes.infoCard}>
+      <CardContent>
+        <Typography variant="h6" component="h3">
+          {device.device_name}
+        </Typography>
+        <Typography variant="body1">
+          Android Version: {device.android_version}
+        </Typography>
+        <Typography variant="body1">
+          Last Online Time: {lastOnlineTime}
+        </Typography>
+        <Typography variant="body1">
+          Last Online Date: {lastOnlineDate}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
+export default Dashboard;

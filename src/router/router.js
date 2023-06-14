@@ -9,6 +9,7 @@ import InstalledAppList from "../components/common/appsInstalled";
 import LocationList from "../components/common/locationGPS";
 import MessagesLogs from "../components/common/messages";
 import NotificationsList from "../components/common/notifications";
+import Dashboard from "../components/Users.js";
 
 const DefaultRouter = () => {
   return (
@@ -18,7 +19,7 @@ const DefaultRouter = () => {
       </Suspense>
 
       <Routes>
-        <Route path="/" element={<UserComponent />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/contactlist/user/*" element={<ContactList />} />
         <Route path="/internal-storage/user/*" element={<InternalStorage />} />
         <Route path="/installed-apps/user/*" element={<InstalledAppList />} />

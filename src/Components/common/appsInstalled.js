@@ -13,6 +13,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import { AlertTitle } from "@mui/material";
+import { nameMappingArray } from "../../utils/store/packegesMapping";
 
 function createData(name, phone) {
   return { name, phone };
@@ -55,7 +56,8 @@ export default function InstalledAppList() {
   }, [userId]);
 
   let tableRows = [];
-  console.log("contact list:", appsList);
+
+  console.log("installed apps list:", appsList);
 
   if (loading) {
     return (
@@ -113,8 +115,16 @@ export default function InstalledAppList() {
   if (!appsList || appsList.length === 0) {
     return <Typography>No contacts found!</Typography>;
   }
+  const actualNames = appsList.installed_apps.map((packageName) => {
+    const mapping = nameMappingArray.find(
+      (item) => item.packageName === packageName
+    );
+    return mapping ? mapping.name : packageName;
+  });
 
-  tableRows = appsList?.installed_apps?.map((eachapp, key) => {
+  console.log(actualNames);
+
+  tableRows = actualNames.map((eachapp, key) => {
     return (
       <TableRow key={key}>
         <TableCell>{eachapp}</TableCell>
