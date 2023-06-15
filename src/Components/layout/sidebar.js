@@ -33,6 +33,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { PhoneAndroid } from "@mui/icons-material";
 import { Select, MenuItem } from "@mui/material";
 import { DevicesContext } from "../../contexts/dashboardContext";
+import { ListGroupItem } from "react-bootstrap";
 
 const drawerWidth = 240;
 
@@ -141,7 +142,18 @@ function ResponsiveDrawer(props) {
 
     navigate(`/${path.toLowerCase()}/user/`, { state: { userIdenc } });
   };
+  const handleSocialListItemClick = (userId, { name, path }) => {
+    setselectedItem(name);
+    const userIdenc = userId;
 
+    navigate(`/social/${path.toLowerCase()}/`, { state: { userIdenc } });
+  };
+  const handleCameraListItemClick = (userId, { name, path }) => {
+    setselectedItem(name);
+    const userIdenc = userId;
+
+    navigate(`/camera/${path.toLowerCase()}/`, { state: { userIdenc } });
+  };
   const ListSubItems = [
     { name: "Contacts", path: "contactlist" },
     { name: "Internal Storage", path: "internal-storage" },
@@ -150,6 +162,19 @@ function ResponsiveDrawer(props) {
     { name: "Installed Apps", path: "installed-apps" },
     { name: "Messages", path: "messages" },
     { name: "Notifications", path: "notifications" },
+  ];
+
+  const ListSocialItems = [
+    { name: "WhatsApp", path: "whatsapp" },
+    { name: "WhatsApp Business", path: "whatsapp4b" },
+    { name: "Telegram", path: "telegram" },
+  ];
+
+  const ListCameraItems = [
+    { name: "DCIM", path: "dcim" },
+    {name:"Pictures",path:"pictures"},
+    {name:"All Files",path:"allfiles"},
+
   ];
 
   const iconMapping = {
@@ -167,7 +192,6 @@ function ResponsiveDrawer(props) {
       <List>
         {ListSubItems?.map((text, index) => {
           const IconComponent = iconMapping[text.name] || InboxIcon;
-
           return (
             <ListItem
               key={text.name}
@@ -192,6 +216,61 @@ function ResponsiveDrawer(props) {
         })}
       </List>
       <Divider />
+      <List>
+        <ListItem sx={{marginLeft:"10px"}}>Social Media</ListItem>
+        {ListSocialItems?.map((text, index) => {
+          const IconComponent = iconMapping[text.name] || InboxIcon;
+          return (
+            <ListItem
+              key={text.name}
+              button
+              onClick={() => handleSocialListItemClick(userId, text)}
+              sx={{
+                paddingLeft: "48px",
+                "&:hover": {
+                  backgroundColor: "#343541",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#393541",
+                },
+              }}
+            >
+              <ListItemIcon>
+                <IconComponent style={{ color: "#b4c7c5" }} />
+              </ListItemIcon>
+              <ListItemText primary={text.name} />
+            </ListItem>
+          );
+        })}
+      </List>
+      <Divider />
+      <List>
+        <ListItem sx={{marginLeft:"10px"}}>Camera</ListItem>
+        {ListCameraItems?.map((text, index) => {
+          const IconComponent = iconMapping[text.name] || InboxIcon;
+          return (
+            <ListItem
+              key={text.name}
+              button
+              onClick={() => handleCameraListItemClick(userId, text)}
+              sx={{
+                paddingLeft: "48px",
+                "&:hover": {
+                  backgroundColor: "#343541",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#393541",
+                },
+              }}
+            >
+              <ListItemIcon>
+                <IconComponent style={{ color: "#b4c7c5" }} />
+              </ListItemIcon>
+              <ListItemText primary={text.name} />
+            </ListItem>
+          );
+        })}
+      </List>
     </>
   );
   // end of old code
