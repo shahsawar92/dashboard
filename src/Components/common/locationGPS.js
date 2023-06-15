@@ -163,7 +163,7 @@ export default function LocationList() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <AddLocationAltIcon />
+                  <AddLocationAltIcon style={{ fontSize: "2rem" }} />
                 </a>
               </TableCell>
             </TableRow>

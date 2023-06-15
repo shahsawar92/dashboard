@@ -66,7 +66,6 @@ export default function InternalStorage() {
         "_blank"
       );
     } catch (error) {
-      toast.Alert("Internal server error occurred. Please try again later.");
       if (error.response && error.response.status === 500) {
         // Handle the internal server error
         console.log("Internal server error occurred. Please try again later.");
