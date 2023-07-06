@@ -34,6 +34,7 @@ import { PhoneAndroid } from "@mui/icons-material";
 import { Select, MenuItem } from "@mui/material";
 import { DevicesContext } from "../../contexts/dashboardContext";
 import { ListGroupItem } from "react-bootstrap";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
 
@@ -46,7 +47,12 @@ function ResponsiveDrawer(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const { updateDevices } = React.useContext(DevicesContext);
-
+ 
+  const logoutFunction= () => {
+    localStorage.removeItem('username');
+    localStorage.removeItem('password');
+    navigate('/login', { replace: true });
+  }
   const options = [
     { value: "all", label: "All Devices" },
     { value: "10", label: "Android 10" },
@@ -281,30 +287,40 @@ function ResponsiveDrawer(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          backgroundColor: "#fff",
-          color: "#000",
-        }}
+     <AppBar
+  position="fixed"
+  sx={{
+    width: { sm: `calc(100% - ${drawerWidth}px)` },
+    ml: { sm: `${drawerWidth}px` },
+    backgroundColor: "#fff",
+    color: "#000",
+  }}
+>
+  <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+    <div>
+      <IconButton
+        color="inherit"
+        aria-label="open drawer"
+        edge="start"
+        onClick={handleDrawerToggle}
+        sx={{ mr: 2, display: { sm: "none" } }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {selectedItem ? selectedItem : "Dashboard"}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+        <MenuIcon />
+      </IconButton>
+      <Typography variant="h6" noWrap component="div">
+        {selectedItem ? selectedItem : "Dashboard"}
+      </Typography>
+    </div>
+    <IconButton
+      color="inherit"
+      aria-label="logout"
+      onClick={logoutFunction}
+    >
+      <LogoutIcon />
+    </IconButton>
+  </Toolbar>
+</AppBar>
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
