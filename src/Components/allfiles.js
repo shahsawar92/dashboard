@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { AlertTitle, Box, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { BASE_URL, fetchInternalFile, getAllfiles } from "../services/apiService";
+import { groupFilesByDate } from "../utils/helper";
 // import { BASE_URL, getAllfiles, getdcimfile } from "../../../services/apiService";
 
 
@@ -27,7 +28,7 @@ export default function AllFiles() {
   const [currentPath, setCurrentPath] = useState("");
   console.log("currentPath:", currentPath);
   const [empty, setEmpty] = useState(false);
-
+console.log("filesList:", filesList);
   const handleFileClick = async (file) => {
     const newPath = currentPath ? `${currentPath}/${file?.name}` : file?.name;
     console.log("newPath:", newPath);
@@ -235,7 +236,10 @@ export default function AllFiles() {
       </TableContainer>
     );
   }
+// Group the files by date
+const groupedFiles = groupFilesByDate(filesList?.files);
 
+console.log("groupedFiles", groupedFiles);
   return (
     <TableContainer component={Card}>
       <Table aria-label="simple table">
@@ -250,33 +254,44 @@ export default function AllFiles() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filesList?.files?.map((eachfile, key) => {
-            return (
-              <TableRow key={key}>
-                <TableCell
-                  style={{ cursor: "pointer" }}
-                  align="left"
-                  onClick={() => {
-                    handleFileClick(eachfile);
-                  }}
-                >
-                  {eachfile?.name}
-                </TableCell>
-                <TableCell align="center">
-                  {eachfile?.isFile && (
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        handleDownload(eachfile);
-                      }}
-                    >
-                      Download
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+{Object.entries(groupedFiles).map(([date, files], key) => (
+  <React.Fragment key={key}>
+    <TableRow>
+      <TableCell colSpan={2} align="center">
+        <b>{date}</b>
+      </TableCell>
+    </TableRow>
+    {files.map((file, index) => (
+      <TableRow key={index}>
+        <TableCell
+          style={{ cursor: "pointer" }}
+          align="left"
+          onClick={() => {
+            handleFileClick(file);
+          }}
+        >
+          {file.name}
+        </TableCell>
+        <TableCell align="center">
+          {file.isFile && (
+            <>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  handleDownload(file);
+                }}
+              >
+                Download
+              </Button>
+              <p>{date}</p>
+            </>
+          )}
+        </TableCell>
+      </TableRow>
+    ))}
+  </React.Fragment>
+))}
+
         </TableBody>
       </Table>
     </TableContainer>

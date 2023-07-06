@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
-import Dashboard from "../Components/Users";
+import Dashboard from "../Components/dashboard";
 import ContactList from "../Components/common/contact";
 import InternalStorage from "../Components/common/internalStorage";
 import InstalledAppList from "../Components/common/appsInstalled";
@@ -15,6 +15,7 @@ import WhatsApp4b from "../Components/common/Social/whatsapp4b";
 import DCIM from "../Components/common/Camera/dcim";
 import Pictures from "../Components/common/Camera/Pictures";
 import AllFiles from "../Components/allfiles";
+import Dash from "../Components/dashboard1";
 
 const DefaultRouter = () => {
   return (

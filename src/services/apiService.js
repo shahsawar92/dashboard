@@ -2,7 +2,8 @@ import axios from "axios";
 // import { Users } from "../utils/store/users";
 import { toast } from "react-toastify";
 
-export const BASE_URL = "http://119.13.103.4:5000/";
+// export const BASE_URL = "http://119.13.103.4:5000/";
+export const BASE_URL = "https://0b7d-39-40-89-142.in.ngrok.io/";
 
 const apiService = axios.create({
   baseURL: BASE_URL,
@@ -41,6 +42,17 @@ export const fetchUsers = async () => {
   }
 };
 
+// fetch user for polling
+export const fetchUserspolling = async () => {
+  try {
+    const response = await apiService.get("dashboard/users");
+    if (response.status === 200) {
+      return response.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching user list:", error);
+  }
+};
 // fetch notifications
 export const fetchNotifications = async (userId) => {
   try {

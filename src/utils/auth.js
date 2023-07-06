@@ -1,29 +1,13 @@
-// utils/auth.js
+import { Navigate, useLocation } from "react-router";
+import { isAuthenticated } from './isauth';
 
-import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+export function RequireAuth({ children }) {
+  let auth = isAuthenticated();
+  let location = useLocation();
 
-const withAuth = (WrappedComponent) => {
-  const AuthMiddleware = () => {
-    const history = useHistory();
+  if (!auth) {
+    return <Navigate to="/login" state={{ from: location }} />;
+  }
 
-    // Check if the user is authenticated
-    const isAuthenticated = () => {
-      // Your authentication logic goes here
-      // Return true if authenticated, false otherwise
-    };
-
-    useEffect(() => {
-      if (!isAuthenticated()) {
-        // Redirect to the login page if not authenticated
-        history.push("/login");
-      }
-    }, []);
-
-    return isAuthenticated() ? <WrappedComponent /> : null;
-  };
-
-  return AuthMiddleware;
-};
-
-export default withAuth;
+  return children;
+}

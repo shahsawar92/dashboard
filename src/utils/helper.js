@@ -11,6 +11,8 @@
 //   return encryptedText;
 // };
 
+import { Alert } from "@mui/material";
+
 // export const decrypt = (encryptedText, shift) => {
 //   let decryptedText = "";
 //   for (let i = 0; i < encryptedText.length; i++) {
@@ -46,3 +48,34 @@
 //   }
 //   return charCode;
 // };
+
+  export const ErrorMessage = ({ message }) => {
+  return (
+    <Alert severity="error">
+      {message}
+    </Alert>
+  );
+};
+
+export function groupFilesByDate(files) {
+  const groupedFiles = files?.reduce((groups, eachfile) => {
+    const date = new Date(eachfile.date);
+    const formattedDate = date.toLocaleDateString();
+
+    if (!groups[formattedDate]) {
+      groups[formattedDate] = [];
+    }
+
+    groups[formattedDate].push(eachfile);
+    return groups;
+  }, {});
+
+  const sortedGroups = Object.entries(groupedFiles).sort((a, b) => {
+    const dateA = new Date(a[0]);
+    const dateB = new Date(b[0]);
+    return dateA - dateB;
+  });
+
+  return Object.fromEntries(sortedGroups);
+}
+

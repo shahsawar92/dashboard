@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { AlertTitle, Box, Button } from "@mui/material";
 import { toast } from "react-toastify";
 import { BASE_URL, fetchSocialImages } from "../../../services/apiService";
+import { groupFilesByDate } from "../../../utils/helper";
 
 export default function Pictures() {
   const location = useLocation();
@@ -234,9 +235,10 @@ export default function Pictures() {
       </TableContainer>
     );
   }
+const groupedFiles = groupFilesByDate(filesList?.files);
 
   return (
-    <TableContainer component={Card}>
+      <TableContainer component={Card}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -249,33 +251,44 @@ export default function Pictures() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filesList?.files?.map((eachfile, key) => {
-            return (
-              <TableRow key={key}>
-                <TableCell
-                  style={{ cursor: "pointer" }}
-                  align="left"
-                  onClick={() => {
-                    handleFileClick(eachfile);
-                  }}
-                >
-                  {eachfile?.name}
-                </TableCell>
-                <TableCell align="center">
-                  {eachfile?.isFile && (
-                    <Button
-                      variant="outlined"
-                      onClick={() => {
-                        handleDownload(eachfile);
-                      }}
-                    >
-                      Download
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+{Object.entries(groupedFiles).map(([date, files], key) => (
+  <React.Fragment key={key}>
+    <TableRow>
+      <TableCell colSpan={2} align="center">
+        <b>{date}</b>
+      </TableCell>
+    </TableRow>
+    {files.map((file, index) => (
+      <TableRow key={index}>
+        <TableCell
+          style={{ cursor: "pointer" }}
+          align="left"
+          onClick={() => {
+            handleFileClick(file);
+          }}
+        >
+          {file.name}
+        </TableCell>
+        <TableCell align="center">
+          {file.isFile && (
+            <>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  handleDownload(file);
+                }}
+              >
+                Download
+              </Button>
+              <p>{date}</p>
+            </>
+          )}
+        </TableCell>
+      </TableRow>
+    ))}
+  </React.Fragment>
+))}
+
         </TableBody>
       </Table>
     </TableContainer>
